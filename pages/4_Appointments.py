@@ -14,7 +14,16 @@ current_role = user['role']
 st.markdown("<h2 class='main-header'>📅 جدول المواعيد</h2>", unsafe_allow_html=True)
 
 try:
-    df_appt = read_sheet("appointments")
+    try:
+        df_appt = read_sheet("appointments")
+    except Exception:
+        df_appt = pd.DataFrame(columns=['id','timestamp','client_name','assigned_to',
+                                         'appointment_date','appointment_time','type','notes','status'])
+
+    if df_appt.empty or len(df_appt.columns) == 0:
+        df_appt = pd.DataFrame(columns=['id','timestamp','client_name','assigned_to',
+                                         'appointment_date','appointment_time','type','notes','status'])
+
     if 'status' not in df_appt.columns: df_appt['status'] = 'قادم'
 
     df_leads = read_sheet("leads_data")

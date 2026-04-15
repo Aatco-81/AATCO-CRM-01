@@ -114,7 +114,6 @@ try:
         save_btn = st.form_submit_button("💾 حفظ التحديث")
 
     if save_btn:
-        # حماية: المندوب لا يستطيع إلغاء العقد
         if unmark_contracted and current_role != "admin":
             st.error("❌ إلغاء العقد يتطلب صلاحية المدير.")
         else:
@@ -124,20 +123,26 @@ try:
                     now_str  = datetime.now().strftime("%Y-%m-%d %H:%M")
                     idx      = df_fresh[df_fresh['client_name'] == target_client].index
 
+                    # إضافة الأعمدة الناقصة إذا لم تكن موجودة
+                    for col, default in [('contracted','لا'),('contract_date',''),('last_update',''),('history','')]:
+                        if col not in df_fresh.columns:
+                            df_fresh[col] = default
+
                     if mark_contracted:
-                        new_contracted = "نعم"
-                        final_status   = CLOSED_WON
+                        new_contracted    = "نعم"
+                        final_status      = CLOSED_WON
                         new_contract_date = now_str
                     elif unmark_contracted:
-                        new_contracted = "لا"
-                        final_status   = new_status
+                        new_contracted    = "لا"
+                        final_status      = new_status
                         new_contract_date = ""
                     else:
                         new_contracted    = str(current_record.get('contracted', 'لا'))
                         final_status      = new_status
                         new_contract_date = str(current_record.get('contract_date', ''))
 
-                    old_hist     = str(df_fresh.loc[idx[0], 'history']) if 'history' in df_fresh.columns and len(idx) > 0 else ""
+                    old_hist     = str(df_fresh.loc[idx[0], 'history']) if len(idx) > 0 else ""
+                    if old_hist in ['nan', 'None', '']: old_hist = ""
                     contract_tag = " — تم التعاقد 🎉" if mark_contracted else ""
                     new_hist     = f"{old_hist}\n[{now_str}] {current_user}: {final_status}{contract_tag} — {update_notes}".strip()
 
