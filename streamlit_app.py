@@ -1,7 +1,7 @@
 import streamlit as st
 from streamlit_gsheets import GSheetsConnection
 
-st.set_page_config(page_title="AATCO CRM", layout="wide", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="AATCO CRM", layout="wide", initial_sidebar_state="expanded")
 
 st.markdown("""
     <style>
@@ -19,11 +19,17 @@ st.markdown("""
         padding: 12px; border-bottom: 2px solid #e2e8f0;
         margin-bottom: 20px;
     }
-    /* إخفاء القائمة الجانبية في شاشة الدخول */
-    [data-testid="stSidebar"] { display: none; }
-    [data-testid="collapsedControl"] { display: none; }
     </style>
 """, unsafe_allow_html=True)
+
+# إخفاء القائمة فقط في شاشة الدخول
+if "user_info" not in st.session_state or st.session_state.user_info is None:
+    st.markdown("""
+        <style>
+        [data-testid="stSidebar"] { display: none; }
+        [data-testid="collapsedControl"] { display: none; }
+        </style>
+    """, unsafe_allow_html=True)
 
 # ── التحقق من تسجيل الدخول
 if "user_info" not in st.session_state:
