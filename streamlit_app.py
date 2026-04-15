@@ -1,7 +1,7 @@
 import streamlit as st
 from streamlit_gsheets import GSheetsConnection
 
-st.set_page_config(page_title="AATCO CRM", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="AATCO CRM", layout="wide", initial_sidebar_state="collapsed")
 
 st.markdown("""
     <style>
@@ -19,6 +19,9 @@ st.markdown("""
         padding: 12px; border-bottom: 2px solid #e2e8f0;
         margin-bottom: 20px;
     }
+    /* إخفاء القائمة الجانبية في شاشة الدخول */
+    [data-testid="stSidebar"] { display: none; }
+    [data-testid="collapsedControl"] { display: none; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -38,15 +41,12 @@ if st.session_state.user_info is None:
             try:
                 conn     = st.connection("gsheets", type=GSheetsConnection)
                 users_df = conn.read(worksheet="user_db", ttl=0)
-                # تشخيص دقيق
+                matched  = False
                 for _, row in users_df.iterrows():
-                    st.write(f"صف: username={repr(row['username'])} password={repr(row['password'])}")
-                st.write(f"مدخل: username={repr(str(user_input))} password={repr(str(pass_input))}")
-                # مقارنة
-                matched = False
-                for _, row in users_df.iterrows():
-                    if (str(row['username']).strip().lower() == str(user_input).strip().lower() and
-                        str(row['password']).strip() == str(pass_input).strip()):
+                    clean_input = ''.join(c for c in str(user_input) if c.isascii()).strip()
+                    clean_pass  = ''.join(c for c in str(pass_input) if c.isascii()).strip()
+                    if (str(row['username']).strip().lower() == clean_input.lower() and
+                        str(row['password']).strip() == clean_pass):
                         st.session_state.user_info = {
                             "full_name": str(row['full_name']).strip(),
                             "role":      str(row['role']).strip()
