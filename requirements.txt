@@ -1,6 +1,6 @@
 streamlit
+streamlit-gsheets-connection
+gspread
 pandas
 plotly
-st-supabase-connection
-supabase
-streamlit-gsheets
+openpyxl
