@@ -124,7 +124,7 @@ try:
                     idx      = df_fresh[df_fresh['client_name'] == target_client].index
 
                     # إضافة الأعمدة الناقصة وتحويلها لـ string
-                    for col, default in [('contracted','لا'),('contract_date',''),('last_update',''),('history','')]:
+                    for col, default in [('contracted','لا'),('contract_date',''),('last_update',''),('history',''),('notes',''),('status','جديدة')]:
                         if col not in df_fresh.columns:
                             df_fresh[col] = default
                         df_fresh[col] = df_fresh[col].fillna('').astype(str)
