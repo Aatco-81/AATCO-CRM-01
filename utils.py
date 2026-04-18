@@ -76,7 +76,16 @@ def get_conn():
 
 def read_sheet(worksheet):
     conn = get_conn()
-    return conn.read(worksheet=worksheet, ttl=0)
+    df = conn.read(worksheet=worksheet, ttl=0)
+    # تحويل الأعمدة النصية المعروفة لـ string لتجنب مشاكل float64
+    text_cols = ['notes', 'history', 'last_update', 'contract_date', 
+                 'contracted', 'status', 'client_name', 'assigned_to',
+                 'contact_person', 'position', 'phone', 'location_url',
+                 'pref_time', 'priority', 'customer_type', 'service_type', 'type']
+    for col in text_cols:
+        if col in df.columns:
+            df[col] = df[col].fillna('').astype(str)
+    return df
 
 def save_sheet(worksheet, data):
     conn = get_conn()
